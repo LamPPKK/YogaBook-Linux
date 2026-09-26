@@ -36,7 +36,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y \
-            bc bison build-essential cpio dwarves flex fakeroot \
+            bc bison build-essential cpio debhelper-compat dwarves flex fakeroot \
             libdw-dev libelf-dev libssl-dev rsync kmod curl
 
       - name: Check out kernel source
