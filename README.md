@@ -93,6 +93,11 @@ the generated Debian packages and SHA-256 checksums as an artifact.
 The default source ref is `v6.18.x-yogabook`. A tag push matching
 `kernel-*` also starts a build automatically.
 
+The **Build latest Yoga Book userspace packages** workflow builds fresh Debian
+packages from the current upstream branches for the touch keyboard, ALSA UCM
+configuration and Yoga Book support service. Each artifact includes the exact
+source commit and SHA-256 checksums.
+
 The **Build native Yoga Book packages** workflow additionally provides:
 
 - Fedora RPM packages using `binrpm-pkg`

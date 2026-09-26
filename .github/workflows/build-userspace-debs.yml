@@ -1,0 +1,57 @@
+name: Build latest Yoga Book userspace packages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-26.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: touch-keyboard
+            repository: https://github.com/jekhor/chromiumos_touch_keyboard.git
+            ref: master
+          - name: alsa-ucm-conf-yogabook
+            repository: https://github.com/jekhor/alsa-ucm-conf-yogabook.git
+            ref: main
+          - name: yogabook-support
+            repository: https://github.com/jekhor/yogabook-support.git
+            ref: main
+
+    steps:
+      - name: Install package build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            build-essential cmake debhelper devscripts dpkg-dev git \
+            libevdev-dev libglib2.0-dev libinput-dev libsystemd-dev \
+            libudev-dev pkg-config
+
+      - name: Check out latest upstream source
+        run: git clone --depth 1 --branch "${{ matrix.ref }}" \
+          "${{ matrix.repository }}" "${{ matrix.name }}"
+
+      - name: Build Debian package
+        working-directory: ${{ matrix.name }}
+        run: dpkg-buildpackage -b -us -uc
+
+      - name: Collect package and source metadata
+        run: |
+          mkdir -p artifacts/${{ matrix.name }}
+          cp ./*.deb artifacts/${{ matrix.name }}/
+          git -C "${{ matrix.name }}" rev-parse HEAD > artifacts/${{ matrix.name }}/SOURCE_COMMIT
+          sha256sum artifacts/${{ matrix.name }}/* > artifacts/${{ matrix.name }}/SHA256SUMS
+
+      - name: Upload Debian package
+        uses: actions/upload-artifact@v4
+        with:
+          name: yogabook-${{ matrix.name }}-deb-${{ github.sha }}
+          path: artifacts/${{ matrix.name }}/
+          if-no-files-found: error
