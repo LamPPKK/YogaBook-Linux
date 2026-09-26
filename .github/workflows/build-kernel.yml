@@ -31,6 +31,7 @@ jobs:
       LOCAL_VERSION: ${{ inputs.local-version || '-yogabook' }}
 
     steps:
+      - uses: actions/checkout@v4
       - name: Install build dependencies
         run: |
           sudo apt-get update

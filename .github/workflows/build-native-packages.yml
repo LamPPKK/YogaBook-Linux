@@ -115,6 +115,7 @@ jobs:
   chromiumos-kernel:
     runs-on: ubuntu-24.04
     steps:
+      - uses: actions/checkout@v4
       - name: Install ChromiumOS kernel build dependencies
         run: |
           sudo apt-get update
