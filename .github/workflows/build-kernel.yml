@@ -20,7 +20,11 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        ubuntu: ["24.04", "26.04"]
+    runs-on: ubuntu-${{ matrix.ubuntu }}
     env:
       KERNEL_REPOSITORY: https://github.com/jekhor/yogabook-linux-kernel.git
       KERNEL_REF: ${{ inputs.kernel-ref || 'v6.18.x-yogabook' }}
@@ -52,6 +56,6 @@ jobs:
       - name: Upload kernel packages
         uses: actions/upload-artifact@v4
         with:
-          name: yogabook-kernel-${{ github.sha }}
+          name: yogabook-kernel-ubuntu-${{ matrix.ubuntu }}-${{ github.sha }}
           path: artifacts/
           if-no-files-found: error
