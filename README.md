@@ -11,18 +11,29 @@ configuration, sensor support and distribution packaging information.
 ## Current status
 
 The default kernel is based on the `v6.18.x-yogabook` branch. Most hardware
-support is available through the upstream Linux kernel and Yoga Book patches.
+support is available through the Yoga Book kernel patches and the upstream
+Linux kernel.
 
 Known limitations include:
 
-- Cameras are not supported.
+- Camera support is experimental and is built from the Yoga Book v5 camera
+  series (OV2740, OV8858, AtomISP/CSI-2 and WV517S).
 - LTE may not work on L variants.
 - Audio still requires the Yoga Book-specific configuration.
 - Suspend, charging while powered on, screen brightness, stylus axes and
   microphone channel mapping may vary by device firmware and desktop environment.
 
 Please include the device model and `dmesg`/`journalctl` output when reporting
-an issue: <https://github.com/jekhor/yogabook-linux/issues>.
+an issue: <https://github.com/LamPPKK/YogaBook-Linux/issues>.
+
+## Maintained source mirrors
+
+The related source repositories are mirrored under the `LamPPKK` account so
+the superproject does not depend on a GitLab-only gitlink or an upstream
+repository that can disappear. The mirror set includes the touch keyboard,
+ALSA UCM, support service, IIO sensor proxy, live CD, Android kernel sources
+and ProductionKernelQuilts. Each mirror preserves the upstream default branch
+and tags where Git hosting permits it.
 
 ## Installation
 
@@ -134,7 +145,7 @@ installed.
 ## Troubleshooting
 
 Check the open issue tracker before reporting a duplicate:
-<https://github.com/jekhor/yogabook-linux/issues>.
+<https://github.com/LamPPKK/YogaBook-Linux/issues>.
 
 Useful diagnostics:
 

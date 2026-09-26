@@ -1,28 +1,28 @@
 [submodule "ProductionKernelQuilts"]
 	path = ProductionKernelQuilts
-	url = https://github.com/01org/ProductionKernelQuilts.git
+	url = https://github.com/LamPPKK/YogaBook-Linux-ProductionKernelQuilts.git
 
 [submodule "yogabook-linux-kernel"]
 	path = yogabook-linux-kernel
 	url = https://github.com/jekhor/yogabook-linux-kernel.git
 [submodule "android_kernel_lenovo_yeti"]
 	path = android_kernel_lenovo_yeti
-	url = https://github.com/jekhor/yogabook-linux-android-kernel.git
+	url = https://github.com/LamPPKK/YogaBook-Linux-Android-Kernel.git
 [submodule "chromiumos_touch_keyboard"]
 	path = touch-keyboard
-	url = https://github.com/jekhor/chromiumos_touch_keyboard.git
+	url = https://github.com/LamPPKK/YogaBook-Linux-Touch-Keyboard.git
 [submodule "live-cd"]
 	path = live-cd
-	url = https://github.com/jekhor/yogabook-livecd.git
+	url = https://github.com/LamPPKK/YogaBook-Linux-LiveCD.git
 [submodule "android_kernel_lenovo_yeti-sean_hoyt"]
 	path = android_kernel_lenovo_yeti-sean_hoyt
-	url = https://github.com/deadman96385/android_kernel_lenovo_yeti.git
+	url = https://github.com/LamPPKK/YogaBook-Linux-Android-Kernel-SeanHoyt.git
 [submodule "alsa-ucm-conf-yogabook"]
 	path = alsa-ucm-conf-yogabook
-	url = https://github.com/jekhor/alsa-ucm-conf-yogabook
+	url = https://github.com/LamPPKK/YogaBook-Linux-ALSA-UCM.git
 [submodule "yogabook-support"]
 	path = yogabook-support
-	url = https://github.com/jekhor/yogabook-support.git
+	url = https://github.com/LamPPKK/YogaBook-Linux-Support.git
 [submodule "iio-sensor-proxy"]
 	path = iio-sensor-proxy
-	url = https://gitlab.freedesktop.org/jekhor/iio-sensor-proxy.git
+	url = https://github.com/LamPPKK/YogaBook-Linux-IIO-Sensor-Proxy.git
