@@ -70,7 +70,8 @@ jobs:
         working-directory: kernel
         run: |
           make yogabook_defconfig
-          make LOCALVERSION="$LOCAL_VERSION" bindeb-pkg -j"$(nproc)"
+          make LOCALVERSION="$LOCAL_VERSION" -j"$(nproc)"
+          make LOCALVERSION="$LOCAL_VERSION" bindeb-pkg -j1
 
       - name: Collect packages
         run: |

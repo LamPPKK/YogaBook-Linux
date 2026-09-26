@@ -54,6 +54,7 @@ jobs:
           fi
           cd kernel
           make yogabook_defconfig
+          make LOCALVERSION=-yogabook -j"$(nproc)"
           make LOCALVERSION=-yogabook binrpm-pkg -j"$(nproc)"
       - name: Upload Fedora RPM packages
         uses: actions/upload-artifact@v4
