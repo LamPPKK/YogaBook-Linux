@@ -93,6 +93,21 @@ the generated Debian packages and SHA-256 checksums as an artifact.
 The default source ref is `v6.18.x-yogabook`. A tag push matching
 `kernel-*` also starts a build automatically.
 
+The **Build native Yoga Book packages** workflow additionally provides:
+
+- Fedora RPM packages using `binrpm-pkg`
+- Arch Linux kernel and modules artifacts
+
+These jobs build the same Yoga Book kernel configuration; they do not convert
+Debian packages into RPM or Arch packages.
+
+### ChromiumOS
+
+ChromiumOS images are board-specific. A valid ChromiumOS build requires the
+exact board name, ChromiumOS release branch and image layout. The Yoga Book
+kernel tree alone is not enough to produce a bootable ChromiumOS image, so a
+ChromiumOS workflow must be configured after choosing those values.
+
 ## Installing Linux on the tablet
 
 1. Write a supported Linux ISO to a USB drive.
@@ -120,4 +135,3 @@ systemctl --failed
 
 Include the exact device model (`YB1-X90F`, `YB1-X90L`, `YB1-X91F` or
 `YB1-X91L`), distribution version and the relevant logs.
-
