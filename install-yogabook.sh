@@ -66,10 +66,13 @@ fi
 if ((configure_layout)); then
   layout_dir=/etc/touch_keyboard/layouts
   layout_file="$layout_dir/YB1-X9x-$keyboard_layout.csv"
-  [[ -f "$layout_file" ]] || die "keyboard layout is not installed: $layout_file"
-  ln -sfn "$layout_file" /etc/touch_keyboard/layout.csv
-  if command -v systemctl >/dev/null && systemctl list-unit-files touch-keyboard-handler.service >/dev/null 2>&1; then
-    systemctl try-restart touch-keyboard-handler.service || true
+  if [[ -f "$layout_file" ]]; then
+    ln -sfn "$layout_file" /etc/touch_keyboard/layout.csv
+    if command -v systemctl >/dev/null && systemctl list-unit-files touch-keyboard-handler.service >/dev/null 2>&1; then
+      systemctl try-restart touch-keyboard-handler.service || true
+    fi
+  else
+    printf 'warning: touch-keyboard layouts not found; leaving keyboard layout unchanged\n' >&2
   fi
 fi
 
