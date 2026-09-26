@@ -103,10 +103,11 @@ Debian packages into RPM or Arch packages.
 
 ### ChromiumOS
 
-ChromiumOS images are board-specific. A valid ChromiumOS build requires the
-exact board name, ChromiumOS release branch and image layout. The Yoga Book
-kernel tree alone is not enough to produce a bootable ChromiumOS image, so a
-ChromiumOS workflow must be configured after choosing those values.
+The native-package workflow also builds a generic x86_64 Yoga Book kernel and
+modules archive that can be used as an input to a ChromiumOS board build.
+ChromiumOS images are board-specific: a bootable image still requires the
+exact board name, ChromiumOS release branch, firmware and image layout. The
+kernel artifact is not itself a complete ChromiumOS image.
 
 ## Installing Linux on the tablet
 

@@ -65,3 +65,30 @@ jobs:
           name: yogabook-kernel-arch-${{ github.sha }}
           path: artifacts/
           if-no-files-found: error
+
+  chromiumos-kernel:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Install ChromiumOS kernel build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            bc bison build-essential cpio dwarves flex libdw-dev \
+            libelf-dev libssl-dev rsync kmod git
+      - name: Build generic ChromiumOS-compatible x86 kernel
+        run: |
+          git clone --depth 1 --branch "$KERNEL_REF" "$KERNEL_REPOSITORY" kernel
+          cd kernel
+          make x86_64_defconfig
+          make LOCALVERSION=-yogabook -j"$(nproc)"
+          mkdir -p ../artifacts
+          cp arch/x86/boot/bzImage ../artifacts/vmlinuz-yogabook-chromiumos
+          make INSTALL_MOD_PATH="$PWD/../modules" modules_install
+          tar -C ../modules -czf ../artifacts/yogabook-chromiumos-modules.tar.gz usr/lib/modules
+          sha256sum ../artifacts/* > ../artifacts/SHA256SUMS
+      - name: Upload ChromiumOS kernel artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: yogabook-kernel-chromiumos-${{ github.sha }}
+          path: artifacts/
+          if-no-files-found: error
