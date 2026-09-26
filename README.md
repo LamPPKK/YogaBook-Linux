@@ -98,8 +98,9 @@ Use `--no-keyboard-layout` to preserve the current layout.
 ## Building the kernel with GitHub Actions
 
 Open **Actions → Build Yoga Book kernel → Run workflow** in your fork. The
-workflow builds the selected kernel tag or branch on Ubuntu 24.04 and publishes
-the generated Debian packages and SHA-256 checksums as an artifact.
+workflow builds the selected kernel tag or branch on Ubuntu 24.04 and Ubuntu
+26.04, then publishes the generated Debian packages and SHA-256 checksums as
+artifacts.
 
 The default source ref is `v6.18.x-yogabook`. A tag push matching
 `kernel-*` also starts a build automatically.
