@@ -24,10 +24,14 @@ jobs:
       - name: Install Fedora build dependencies
         run: |
           dnf install -y bc bison cpio dwarves flex gcc gcc-c++ make \
-            openssl-devel elfutils-libelf-devel rsync rpm-build git
+            openssl-devel elfutils-libelf-devel rsync rpm-build git curl
       - name: Build RPM packages
         run: |
           git clone --depth 1 --branch "$KERNEL_REF" "$KERNEL_REPOSITORY" kernel
+          curl --fail --location --retry 3 \
+            'https://patchew.org/linux/20260831180101.3109854-1-mauriziocasciano7@gmail.com/mbox' \
+            -o camera-series.mbox
+          git -C kernel am --3way ../camera-series.mbox
           cd kernel
           make yogabook_defconfig
           make LOCALVERSION=-yogabook binrpm-pkg -j"$(nproc)"
@@ -46,10 +50,14 @@ jobs:
       - name: Install Arch build dependencies
         run: |
           pacman -Syu --noconfirm --needed bc cpio pahole flex \
-            gcc make openssl libelf python rsync tar xz git
+            gcc make openssl libelf python rsync tar xz git curl
       - name: Build kernel and modules archive
         run: |
           git clone --depth 1 --branch "$KERNEL_REF" "$KERNEL_REPOSITORY" kernel
+          curl --fail --location --retry 3 \
+            'https://patchew.org/linux/20260831180101.3109854-1-mauriziocasciano7@gmail.com/mbox' \
+            -o camera-series.mbox
+          git -C kernel am --3way ../camera-series.mbox
           cd kernel
           make yogabook_defconfig
           make LOCALVERSION=-yogabook -j"$(nproc)"
@@ -74,10 +82,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y \
             bc bison build-essential cpio dwarves flex libdw-dev \
-            libelf-dev libssl-dev rsync kmod git
+            libelf-dev libssl-dev rsync kmod git curl
       - name: Build generic ChromiumOS-compatible x86 kernel
         run: |
           git clone --depth 1 --branch "$KERNEL_REF" "$KERNEL_REPOSITORY" kernel
+          curl --fail --location --retry 3 \
+            'https://patchew.org/linux/20260831180101.3109854-1-mauriziocasciano7@gmail.com/mbox' \
+            -o camera-series.mbox
+          git -C kernel am --3way ../camera-series.mbox
           cd kernel
           make x86_64_defconfig
           make LOCALVERSION=-yogabook -j"$(nproc)"

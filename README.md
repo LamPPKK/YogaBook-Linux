@@ -93,6 +93,11 @@ the generated Debian packages and SHA-256 checksums as an artifact.
 The default source ref is `v6.18.x-yogabook`. A tag push matching
 `kernel-*` also starts a build automatically.
 
+Kernel workflows apply the v5 Yoga Book camera series before building. It adds
+OV2740 front-camera, OV8858 rear-camera, AtomISP/CSI-2 bridge and WV517S focus
+support. The series was runtime-tested on YB1-X91L; the build artifact alone
+does not replace testing on the target tablet.
+
 The **Build latest Yoga Book userspace packages** workflow builds fresh Debian
 packages from the current upstream branches for the touch keyboard, ALSA UCM
 configuration and Yoga Book support service. Each artifact includes the exact
