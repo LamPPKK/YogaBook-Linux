@@ -24,7 +24,8 @@ jobs:
       - name: Install Fedora build dependencies
         run: |
           dnf install -y bc bison cpio dwarves flex gcc gcc-c++ make \
-            openssl-devel elfutils-libelf-devel rsync rpm-build git curl
+            openssl openssl-devel perl elfutils-devel elfutils-libelf-devel \
+            rsync rpm-build git curl
       - name: Build RPM packages
         run: |
           git clone --depth 1 --branch "$KERNEL_REF" "$KERNEL_REPOSITORY" kernel
