@@ -46,7 +46,12 @@ jobs:
           curl --fail --location --retry 3 \
             'https://patchew.org/linux/20260831180101.3109854-1-mauriziocasciano7@gmail.com/mbox' \
             -o camera-series.mbox
-          git -C kernel am --keep-non-patch ../camera-series.mbox
+          if ! git -C kernel am --keep-non-patch ../camera-series.mbox; then
+            git -C kernel am --show-current-patch=raw \
+              | grep -q 'Subject: \[PATCH v5 06/16\] media: intel: ipu-bridge: Add Yoga Book camera sensors'
+            git -C kernel am --skip
+            git -C kernel apply ../patches/camera/ipu-bridge-yogabook.patch
+          fi
 
       - name: Build Debian packages
         working-directory: kernel
