@@ -45,19 +45,25 @@ done
 [[ "$keyboard_layout" == pc104 || "$keyboard_layout" == pc105 ]] || die "keyboard layout must be pc104 or pc105"
 
 mapfile -t debs < <(find "$package_dir" -maxdepth 1 -type f -name '*.deb' -print | sort)
-mapfile -t rpms < <(find "$package_dir" -maxdepth 1 -type f \( -name '*.rpm' -o -name '*.pkg.tar.*' \) -print | sort)
+mapfile -t rpms < <(find "$package_dir" -maxdepth 1 -type f -name '*.rpm' -print | sort)
+mapfile -t pacmans < <(find "$package_dir" -maxdepth 1 -type f -name '*.pkg.tar.*' -print | sort)
 mapfile -t apks < <(find "$package_dir" -maxdepth 1 -type f -name '*.apk' -print | sort)
-(( ${#debs[@]} + ${#rpms[@]} + ${#apks[@]} > 0 )) || die "no .deb, .rpm, .pkg.tar.* or .apk packages found in $package_dir"
+(( ${#debs[@]} + ${#rpms[@]} + ${#pacmans[@]} + ${#apks[@]} > 0 )) || die "no .deb, .rpm, .pkg.tar.* or .apk packages found in $package_dir"
 
 if ((${#debs[@]})); then
   command -v apt-get >/dev/null || die "apt-get is required to install .deb packages"
   apt-get update
   dpkg -i "${debs[@]}" || apt-get -f install -y
+elif ((${#pacmans[@]})) && command -v pacman >/dev/null; then
+  pacman -U --noconfirm "${pacmans[@]}"
+elif ((${#rpms[@]})) && command -v dnf >/dev/null; then
+  dnf install -y "${rpms[@]}"
+elif ((${#rpms[@]})) && command -v zypper >/dev/null; then
+  zypper --non-interactive install "${rpms[@]}"
+elif ((${#pacmans[@]})); then
+  die "pacman is required to install Arch packages"
 elif ((${#rpms[@]})); then
-  if [[ "${rpms[0]}" == *.pkg.tar.* ]] && command -v pacman >/dev/null; then pacman -U --noconfirm "${rpms[@]}"
-  elif command -v dnf >/dev/null; then dnf install -y "${rpms[@]}"
-  elif command -v zypper >/dev/null; then zypper --non-interactive install "${rpms[@]}"
-  else die "dnf or zypper is required to install RPM packages"; fi
+  die "dnf or zypper is required to install RPM packages"
 elif ((${#apks[@]})); then
   command -v apk >/dev/null || die "apk is required to install APK packages"
   apk add --allow-untrusted "${apks[@]}"
