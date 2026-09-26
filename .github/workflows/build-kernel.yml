@@ -1,0 +1,57 @@
+name: Build Yoga Book kernel
+
+on:
+  workflow_dispatch:
+    inputs:
+      kernel-ref:
+        description: Kernel tag or branch to build
+        required: true
+        default: v6.18.x-yogabook
+      local-version:
+        description: Local kernel version suffix
+        required: true
+        default: -yogabook
+  push:
+    tags:
+      - 'kernel-*'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    env:
+      KERNEL_REPOSITORY: https://github.com/jekhor/yogabook-linux-kernel.git
+      KERNEL_REF: ${{ inputs.kernel-ref || 'v6.18.x-yogabook' }}
+      LOCAL_VERSION: ${{ inputs.local-version || '-yogabook' }}
+
+    steps:
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            bc bison build-essential cpio dwarves flex fakeroot \
+            libdw-dev libelf-dev libssl-dev rsync kmod
+
+      - name: Check out kernel source
+        run: git clone --depth 1 --branch "$KERNEL_REF" "$KERNEL_REPOSITORY" kernel
+
+      - name: Build Debian packages
+        working-directory: kernel
+        run: |
+          make yogabook_defconfig
+          make LOCALVERSION="$LOCAL_VERSION" bindeb-pkg -j"$(nproc)"
+
+      - name: Collect packages
+        run: |
+          mkdir -p artifacts
+          cp ./*.deb artifacts/
+          sha256sum artifacts/*.deb > artifacts/SHA256SUMS
+
+      - name: Upload kernel packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: yogabook-kernel-${{ github.sha }}
+          path: artifacts/
+          if-no-files-found: error

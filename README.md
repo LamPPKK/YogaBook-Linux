@@ -1,95 +1,123 @@
-# Yoga Book Linux Porting Repository
+# Yoga Book Linux
 
-This repository serves as a central hub for software related to running GNU/Linux
-on Lenovo Yoga Book tablets (YB1-X91L/F, YB1-X90L/F).
+Linux support for Lenovo Yoga Book tablets:
 
-## Status
+- YB1-X90F/L — Android models
+- YB1-X91F/L — Windows models
 
-Instructions are for YB1-X91 (Windows) models. Android (YB1-X90) version should works
-also, with some exception (check the Issues). To boot from USB, enable USB host and
-disable Secure Boot as described here:
-https://web.archive.org/web/20220516142318/https://poz1.com/windows-on-android-lenovo-yogabook/
+The project contains the Yoga Book kernel, touch keyboard support, audio
+configuration, sensor support and distribution packaging information.
 
-Most of the hardware is functional, with the following exceptions:
-- Cameras
-- LTE modem (in L modifications of the tablet)
+## Current status
 
-Most Linux patches have been mainlined, except for the sound drivers.
+The default kernel is based on the `v6.18.x-yogabook` branch. Most hardware
+support is available through the upstream Linux kernel and Yoga Book patches.
 
-## What You Need to Know
+Known limitations include:
 
-The Yoga Book tablet features a sensor keyboard, which essentially functions as
-a touchpad. To use it as a keyboard, a userspace 'driver' is utilized.
-Therefore, installing the OS without connecting a physical keyboard via an OTG
-hub can be challenging.
+- Cameras are not supported.
+- LTE may not work on L variants.
+- Audio still requires the Yoga Book-specific configuration.
+- Suspend, charging while powered on, screen brightness, stylus axes and
+  microphone channel mapping may vary by device firmware and desktop environment.
 
-## Quick Start
+Please include the device model and `dmesg`/`journalctl` output when reporting
+an issue: <https://github.com/jekhor/yogabook-linux/issues>.
 
-I personally use Debian, so the instructions below describe its installation.
-Ubuntu should also be compatible. For other distributions, you may need to
-download and build packages from the source.
+## Installation
 
-Instructions are approximate, details may vary. Please create an issue if
-something goes wrong.
+The easiest approach is to install a distribution supported by the package
+repositories, then install these packages:
 
-### Repositories
+- `linux-image-yogabook`
+- `linux-headers-yogabook` (optional)
+- `touch-keyboard`
+- `yogabook-support`
+- `alsa-ucm-conf-yogabook`
 
-If you want to use a prepackaged repository, there are repositories available for Arch Linux
-(and derivatives), Debian (and derivatives), Ubuntu (and derivatives) and Alpine Linux (and derivatives).
+Available package targets currently include Ubuntu 24.04, Ubuntu 25.10,
+Ubuntu 26.04, Debian Trixie/Forky/Testing/Sid, Arch Linux and Alpine Linux.
 
-Check the Wiki on how to install it using the repositories on your system. Currently supported are:
+Package repositories and build scripts:
 
-- Ubuntu 24.04, 25.10 and 26.04
-- Debian Trixie, Forky, Testing and Sid
-- Arch Linux
-- Alpine Linux
+- Debian/Ubuntu: <https://gitlab.imanuel.dev/packages/yogabook/building/apt-build>
+- Arch Linux: <https://gitlab.imanuel.dev/packages/yogabook/building/pacman-build>
+- Alpine Linux: <https://gitlab.imanuel.dev/packages/yogabook/building/apk-build>
+- Package index: <https://packages.ulbricht.casa/linux-yogabook/-/packages>
 
-Check these links for the build scripts:
+For Debian or Ubuntu, install downloaded packages with:
 
-- [Debian/Ubuntu](https://gitlab.imanuel.dev/packages/yogabook/building/apt-build)
-- [Arch Linux](https://gitlab.imanuel.dev/packages/yogabook/building/pacman-build)
-- [Alpine Linux](https://gitlab.imanuel.dev/packages/yogabook/building/apk-build)
+```sh
+sudo apt install ./linux-image-yogabook*.deb ./touch-keyboard*.deb \
+  ./yogabook-support*.deb ./alsa-ucm-conf-yogabook*.deb
+```
 
-The package repo is found [here](https://packages.ulbricht.casa/linux-yogabook/-/packages).
+On Debian, install firmware when required:
 
-If you want to use a different distro like Fedora, please comment
-[this](https://github.com/jekhor/yogabook-linux/issues/54) issue.
+```sh
+sudo apt install firmware-intel-sound firmware-brcm80211
+```
 
-### OS Installation
+Reboot and verify the running kernel:
 
-1. Download an ISO image and write it to a USB flash drive (refer to
-   [Debian's official site](https://debian.org/) for instructions).
-2. Connect a powered microUSB OTG hub to the tablet (non-powered may works also, let's try).
-3. Connect the USB flash drive and a keyboard to the hub.
-4. Power on the tablet while holding the Volume Up key.
-5. Select the USB drive in the boot menu.
-6. Install Debian as you normally would, and boot into the new system. The
-   Gnome desktop is recommended because it supports screen rotation based on
-   accelerometer data.
-7. Download the latest `.deb` packages (check the Tags section in this repository):
-   - `linux-image`
-   - `touch-keyboard`
-   - `yogabook-support`
-   - `alsa-ucm-conf-yogabook`
-8. Open a terminal emulator, navigate to the directory containing the `.deb`
-   files, and install them using the command `sudo dpkg -i --force-depends *.deb`.
-10. Resolve any missing dependencies with the command `sudo apt -f install`.
-11. For Debian, install firmware packages also: `sudo apt install firmware-intel-sound firmware-brcm80211`.
-12. Reboot. Verify that the new kernel is in use with the command `uname -a`
-    (the output should include 'yogabook' in the version).
-13. If the system has a newer kernel than the one you downloaded, reboot again,
-    select the Yoga Book kernel from the boot menu, and verify that it boots
-    successfully. After this, remove the default kernel from the system with
-    `sudo apt remove linux-image-<version>` command.
-14. The touch keyboard should now be operational, allowing you to detach
-    the OTG hub and enjoy your Yoga Book.
+```sh
+uname -r
+```
+
+The output should contain `yogabook`.
+
+## Installer script
+
+The repository includes `install-yogabook.sh` for a local package directory:
+
+```sh
+sudo ./install-yogabook.sh --package-dir ./packages
+```
+
+The script detects and installs `.deb`, `.rpm`, `.pkg.tar.*` and `.apk`
+artifacts using the available package manager. It defaults to the ANSI `pc104`
+touch-keyboard layout. For an ISO keyboard use:
+
+```sh
+sudo ./install-yogabook.sh --keyboard-layout pc105
+```
+
+Use `--no-keyboard-layout` to preserve the current layout.
+
+## Building the kernel with GitHub Actions
+
+Open **Actions → Build Yoga Book kernel → Run workflow** in your fork. The
+workflow builds the selected kernel tag or branch on Ubuntu 24.04 and publishes
+the generated Debian packages and SHA-256 checksums as an artifact.
+
+The default source ref is `v6.18.x-yogabook`. A tag push matching
+`kernel-*` also starts a build automatically.
+
+## Installing Linux on the tablet
+
+1. Write a supported Linux ISO to a USB drive.
+2. Connect a powered microUSB OTG hub, USB drive and physical keyboard.
+3. Disable Secure Boot and boot from USB using the Volume Up key.
+4. Install Linux normally; GNOME is recommended for automatic rotation.
+5. Install the Yoga Book packages and reboot.
+
+A physical keyboard may be needed during installation because the sensor keyboard
+driver is userspace software and is not available until after the system is
+installed.
 
 ## Troubleshooting
 
-Known issues:
-- Camera doesn't work.
-- To have automatic screen rotation working, it should be supported by desktop
-  environment. Try Gnome first.
-- My Yoga Book randomly freezes after some time. If you have the same behavior,
-  let me know.
+Check the open issue tracker before reporting a duplicate:
+<https://github.com/jekhor/yogabook-linux/issues>.
+
+Useful diagnostics:
+
+```sh
+uname -a
+sudo dmesg -T > dmesg.txt
+systemctl --failed
+```
+
+Include the exact device model (`YB1-X90F`, `YB1-X90L`, `YB1-X91F` or
+`YB1-X91L`), distribution version and the relevant logs.
 
