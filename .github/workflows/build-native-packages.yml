@@ -36,7 +36,19 @@ jobs:
           if ! git -C kernel am --keep-non-patch ../camera-series.mbox; then
             git -C kernel am --show-current-patch=raw \
               | grep -q 'Subject: \[PATCH v5 06/16\] media: intel: ipu-bridge:'
-            git -C kernel am --skip
+            git -C kernel am --skip || true
+            if git -C kernel am --show-current-patch=raw \
+              | grep -q 'Subject: \[PATCH v5 16/16\] media: i2c: Add WV517S lens actuator driver'; then
+              git -C kernel am --show-current-patch=diff > ../wv517s.patch
+              git -C kernel am --skip
+              git -C kernel apply --reject --whitespace=nowarn ../wv517s.patch || true
+              if ! grep -q 'obj-$(CONFIG_VIDEO_WV517S) += wv517s.o' kernel/drivers/media/i2c/Makefile; then
+                sed -i '/obj-$(CONFIG_VIDEO_WM8775) += wm8775.o/a obj-$(CONFIG_VIDEO_WV517S) += wv517s.o' kernel/drivers/media/i2c/Makefile
+              fi
+              rm -f kernel/drivers/media/i2c/Makefile.rej
+              git -C kernel add MAINTAINERS drivers/media/i2c
+              git -C kernel commit -m 'media: i2c: Add WV517S lens actuator driver'
+            fi
             git -C kernel apply ../patches/camera/ipu-bridge-yogabook.patch
           fi
           cd kernel
@@ -69,7 +81,19 @@ jobs:
           if ! git -C kernel am --keep-non-patch ../camera-series.mbox; then
             git -C kernel am --show-current-patch=raw \
               | grep -q 'Subject: \[PATCH v5 06/16\] media: intel: ipu-bridge:'
-            git -C kernel am --skip
+            git -C kernel am --skip || true
+            if git -C kernel am --show-current-patch=raw \
+              | grep -q 'Subject: \[PATCH v5 16/16\] media: i2c: Add WV517S lens actuator driver'; then
+              git -C kernel am --show-current-patch=diff > ../wv517s.patch
+              git -C kernel am --skip
+              git -C kernel apply --reject --whitespace=nowarn ../wv517s.patch || true
+              if ! grep -q 'obj-$(CONFIG_VIDEO_WV517S) += wv517s.o' kernel/drivers/media/i2c/Makefile; then
+                sed -i '/obj-$(CONFIG_VIDEO_WM8775) += wm8775.o/a obj-$(CONFIG_VIDEO_WV517S) += wv517s.o' kernel/drivers/media/i2c/Makefile
+              fi
+              rm -f kernel/drivers/media/i2c/Makefile.rej
+              git -C kernel add MAINTAINERS drivers/media/i2c
+              git -C kernel commit -m 'media: i2c: Add WV517S lens actuator driver'
+            fi
             git -C kernel apply ../patches/camera/ipu-bridge-yogabook.patch
           fi
           cd kernel
@@ -108,7 +132,19 @@ jobs:
           if ! git -C kernel am --keep-non-patch ../camera-series.mbox; then
             git -C kernel am --show-current-patch=raw \
               | grep -q 'Subject: \[PATCH v5 06/16\] media: intel: ipu-bridge:'
-            git -C kernel am --skip
+            git -C kernel am --skip || true
+            if git -C kernel am --show-current-patch=raw \
+              | grep -q 'Subject: \[PATCH v5 16/16\] media: i2c: Add WV517S lens actuator driver'; then
+              git -C kernel am --show-current-patch=diff > ../wv517s.patch
+              git -C kernel am --skip
+              git -C kernel apply --reject --whitespace=nowarn ../wv517s.patch || true
+              if ! grep -q 'obj-$(CONFIG_VIDEO_WV517S) += wv517s.o' kernel/drivers/media/i2c/Makefile; then
+                sed -i '/obj-$(CONFIG_VIDEO_WM8775) += wm8775.o/a obj-$(CONFIG_VIDEO_WV517S) += wv517s.o' kernel/drivers/media/i2c/Makefile
+              fi
+              rm -f kernel/drivers/media/i2c/Makefile.rej
+              git -C kernel add MAINTAINERS drivers/media/i2c
+              git -C kernel commit -m 'media: i2c: Add WV517S lens actuator driver'
+            fi
             git -C kernel apply ../patches/camera/ipu-bridge-yogabook.patch
           fi
           cd kernel
