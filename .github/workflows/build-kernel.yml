@@ -41,6 +41,8 @@ jobs:
       - name: Check out kernel source
         run: |
           git clone --depth 1 --branch "$KERNEL_REF" "$KERNEL_REPOSITORY" kernel
+          git -C kernel config user.name yogabook-ci
+          git -C kernel config user.email yogabook-ci@localhost
           curl --fail --location --retry 3 \
             'https://patchew.org/linux/20260831180101.3109854-1-mauriziocasciano7@gmail.com/mbox' \
             -o camera-series.mbox
