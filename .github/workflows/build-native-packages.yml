@@ -35,7 +35,7 @@ jobs:
             -o camera-series.mbox
           if ! git -C kernel am --keep-non-patch ../camera-series.mbox; then
             git -C kernel am --show-current-patch=raw \
-              | grep -q 'Subject: \[PATCH v5 06/16\] media: intel: ipu-bridge: Add Yoga Book camera sensors'
+              | grep -q 'Subject: \[PATCH v5 06/16\] media: intel: ipu-bridge:'
             git -C kernel am --skip
             git -C kernel apply ../patches/camera/ipu-bridge-yogabook.patch
           fi
@@ -68,7 +68,7 @@ jobs:
             -o camera-series.mbox
           if ! git -C kernel am --keep-non-patch ../camera-series.mbox; then
             git -C kernel am --show-current-patch=raw \
-              | grep -q 'Subject: \[PATCH v5 06/16\] media: intel: ipu-bridge: Add Yoga Book camera sensors'
+              | grep -q 'Subject: \[PATCH v5 06/16\] media: intel: ipu-bridge:'
             git -C kernel am --skip
             git -C kernel apply ../patches/camera/ipu-bridge-yogabook.patch
           fi
@@ -107,7 +107,7 @@ jobs:
             -o camera-series.mbox
           if ! git -C kernel am --keep-non-patch ../camera-series.mbox; then
             git -C kernel am --show-current-patch=raw \
-              | grep -q 'Subject: \[PATCH v5 06/16\] media: intel: ipu-bridge: Add Yoga Book camera sensors'
+              | grep -q 'Subject: \[PATCH v5 06/16\] media: intel: ipu-bridge:'
             git -C kernel am --skip
             git -C kernel apply ../patches/camera/ipu-bridge-yogabook.patch
           fi
