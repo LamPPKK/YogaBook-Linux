@@ -31,12 +31,20 @@ jobs:
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y \
             build-essential cmake debhelper devscripts dpkg-dev git \
-            libevdev-dev libglib2.0-dev libinput-dev libsystemd-dev \
-            libudev-dev pkg-config
+            curl ca-certificates libevdev-dev libglib2.0-dev libinput-dev \
+            libsystemd-dev libudev-dev pkg-config
 
       - name: Check out latest upstream source
-        run: git clone --depth 1 --branch "${{ matrix.ref }}" \
-          "${{ matrix.repository }}" "${{ matrix.name }}"
+        run: |
+          set -euxo pipefail
+          archive_url="${{ matrix.repository }}/archive/refs/heads/${{ matrix.ref }}.tar.gz"
+          curl --fail --location --retry 3 "$archive_url" -o source.tar.gz
+          tar -xzf source.tar.gz
+          source_dir=$(find . -mindepth 1 -maxdepth 1 -type d -name '*-*' -print -quit)
+          test -n "$source_dir"
+          mv "$source_dir" "${{ matrix.name }}"
+          git ls-remote "${{ matrix.repository }}" "refs/heads/${{ matrix.ref }}" \
+            | awk '{print $1}' > "${{ matrix.name }}/SOURCE_COMMIT"
 
       - name: Build Debian package
         working-directory: ${{ matrix.name }}
@@ -46,7 +54,7 @@ jobs:
         run: |
           mkdir -p artifacts/${{ matrix.name }}
           cp ./*.deb artifacts/${{ matrix.name }}/
-          git -C "${{ matrix.name }}" rev-parse HEAD > artifacts/${{ matrix.name }}/SOURCE_COMMIT
+          cp "${{ matrix.name }}/SOURCE_COMMIT" artifacts/${{ matrix.name }}/
           sha256sum artifacts/${{ matrix.name }}/* > artifacts/${{ matrix.name }}/SHA256SUMS
 
       - name: Upload Debian package
