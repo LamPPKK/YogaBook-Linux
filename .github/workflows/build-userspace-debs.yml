@@ -16,13 +16,13 @@ jobs:
       matrix:
         include:
           - name: touch-keyboard
-            repository: https://github.com/jekhor/chromiumos_touch_keyboard.git
+            repository: https://github.com/LamPPKK/YogaBook-Linux-Touch-Keyboard.git
             ref: master
           - name: alsa-ucm-conf-yogabook
-            repository: https://github.com/jekhor/alsa-ucm-conf-yogabook.git
+            repository: https://github.com/LamPPKK/YogaBook-Linux-ALSA-UCM.git
             ref: main
           - name: yogabook-support
-            repository: https://github.com/jekhor/yogabook-support.git
+            repository: https://github.com/LamPPKK/YogaBook-Linux-Support.git
             ref: main
 
     steps:
