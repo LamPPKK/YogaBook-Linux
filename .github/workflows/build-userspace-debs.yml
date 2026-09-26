@@ -37,7 +37,9 @@ jobs:
       - name: Check out latest upstream source
         run: |
           set -euxo pipefail
-          archive_url="${{ matrix.repository }}/archive/refs/heads/${{ matrix.ref }}.tar.gz"
+          archive_repository="${{ matrix.repository }}"
+          archive_repository="${archive_repository%.git}"
+          archive_url="$archive_repository/archive/refs/heads/${{ matrix.ref }}.tar.gz"
           curl --fail --location --retry 3 "$archive_url" -o source.tar.gz
           tar -xzf source.tar.gz
           source_dir=$(find . -mindepth 1 -maxdepth 1 -type d -name '*-*' -print -quit)
