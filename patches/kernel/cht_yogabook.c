@@ -56,8 +56,7 @@ struct cht_mc_private {
 static int platform_clock_control(struct snd_soc_dapm_widget *w,
 		struct snd_kcontrol *k, int  event)
 {
-	struct snd_soc_dapm_context *dapm = w->dapm;
-	struct snd_soc_card *card = dapm->card;
+	struct snd_soc_card *card = snd_soc_dapm_to_card(w->dapm);
 	struct snd_soc_dai *codec_dai;
 	struct cht_mc_private *ctx = snd_soc_card_get_drvdata(card);
 	int ret;
@@ -113,8 +112,7 @@ static int platform_clock_control(struct snd_soc_dapm_widget *w,
 static int cht_yb_hp_event(struct snd_soc_dapm_widget *w,
 		struct snd_kcontrol *k, int event)
 {
-	struct snd_soc_dapm_context *dapm = w->dapm;
-	struct snd_soc_card *card = dapm->card;
+	struct snd_soc_card *card = snd_soc_dapm_to_card(w->dapm);
 	struct cht_mc_private *ctx = snd_soc_card_get_drvdata(card);
 
 	dev_dbg(card->dev, "HP event: %s\n",
@@ -134,8 +132,7 @@ static int cht_yb_hp_event(struct snd_soc_dapm_widget *w,
 static int cht_yb_spk_event(struct snd_soc_dapm_widget *w,
 		struct snd_kcontrol *k, int event)
 {
-	struct snd_soc_dapm_context *dapm = w->dapm;
-	struct snd_soc_card *card = dapm->card;
+	struct snd_soc_card *card = snd_soc_dapm_to_card(w->dapm);
 	struct cht_mc_private *ctx = snd_soc_card_get_drvdata(card);
 
 	dev_dbg(card->dev, "SPK event: %s\n",
@@ -248,10 +245,10 @@ static int cht_aif1_hw_params(struct snd_pcm_substream *substream,
 }
 
 static int cht_yb_jack_event(struct notifier_block *nb,
-		unsigned long event, void *data)
+	unsigned long event, void *data)
 {
 	struct snd_soc_jack *jack = (struct snd_soc_jack *)data;
-	struct snd_soc_dapm_context *dapm = &jack->card->dapm;
+	struct snd_soc_dapm_context *dapm = snd_soc_card_to_dapm(jack->card);
 
 	if (event & SND_JACK_MICROPHONE) {
 		snd_soc_dapm_force_enable_pin(dapm, "MICBIAS1");
@@ -489,7 +486,8 @@ static void cht_codec_register_spidev(void)
 	int ret;
 
 	memset(&rt5677_board_info, 0, sizeof(rt5677_board_info));
-	strncpy(rt5677_board_info.modalias, "rt5677", sizeof(rt5677_board_info.modalias));
+	strscpy(rt5677_board_info.modalias, "rt5677",
+		sizeof(rt5677_board_info.modalias));
 	rt5677_board_info.irq = 0;
 	rt5677_board_info.bus_num = 1;
 	rt5677_board_info.chip_select = 0;
