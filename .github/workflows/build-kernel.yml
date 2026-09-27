@@ -6,11 +6,11 @@ on:
       kernel-ref:
         description: Kernel tag or branch to build
         required: true
-        default: v6.18.x-yogabook
+        default: v7.2.8
       local-version:
         description: Local kernel version suffix
         required: true
-        default: -yogabook
+        default: -yogabook7.2
   push:
     tags:
       - 'kernel-*'
@@ -26,9 +26,9 @@ jobs:
         ubuntu: ["24.04", "26.04"]
     runs-on: ubuntu-${{ matrix.ubuntu }}
     env:
-      KERNEL_REPOSITORY: https://github.com/jekhor/yogabook-linux-kernel.git
-      KERNEL_REF: ${{ inputs.kernel-ref || 'v6.18.x-yogabook' }}
-      LOCAL_VERSION: ${{ inputs.local-version || '-yogabook' }}
+      KERNEL_REPOSITORY: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+      KERNEL_REF: ${{ inputs.kernel-ref || 'v7.2.8' }}
+      LOCAL_VERSION: ${{ inputs.local-version || '-yogabook7.2' }}
 
     steps:
       - uses: actions/checkout@v4

@@ -1,0 +1,42 @@
+diff --git a/sound/soc/intel/boards/Kconfig b/sound/soc/intel/boards/Kconfig
+--- a/sound/soc/intel/boards/Kconfig
++++ b/sound/soc/intel/boards/Kconfig
+@@ -161,6 +161,19 @@
+ 	  Say Y or m if you have such a device. This is a recommended option.
+ 	  If unsure select "N".
+ 
++config SND_SOC_INTEL_CHT_YOGABOOK_MACH
++	tristate "Cherrytrail-based Lenovo Yoga Book tablet"
++	depends on I2C && ACPI
++	depends on X86_INTEL_LPSS || COMPILE_TEST
++	depends on GPIOLIB || COMPILE_TEST
++	select SND_SOC_ACPI
++	select SND_SOC_RT5677
++	select SND_SOC_TS3A227E
++	help
++	  This adds support for the Lenovo Yoga Book tablet based on the
++	  Cherry Trail platform with the RT5677 audio codec.
++	  Say Y or m if you have such a device. If unsure select "N".
++
+ config SND_SOC_INTEL_CHT_BSW_RT5645_MACH
+ 	tristate "Cherrytrail & Braswell with RT5645/5650 codec"
+ 	depends on I2C && ACPI
+diff --git a/sound/soc/intel/boards/Makefile b/sound/soc/intel/boards/Makefile
+--- a/sound/soc/intel/boards/Makefile
++++ b/sound/soc/intel/boards/Makefile
+@@ -9,6 +9,7 @@
+ snd-soc-sst-bytcr-rt5651-y := bytcr_rt5651.o
+ snd-soc-sst-bytcr-wm5102-y := bytcr_wm5102.o
+ snd-soc-sst-cht-bsw-rt5672-y := cht_bsw_rt5672.o
++snd-soc-sst-cht-yogabook-objs := cht_yogabook.o
+ snd-soc-sst-cht-bsw-rt5645-y := cht_bsw_rt5645.o
+ snd-soc-sst-cht-bsw-max98090_ti-y := cht_bsw_max98090_ti.o
+ snd-soc-sst-cht-bsw-nau8824-y := cht_bsw_nau8824.o
+@@ -41,6 +42,7 @@
+ obj-$(CONFIG_SND_SOC_INTEL_BYTCR_RT5651_MACH) += snd-soc-sst-bytcr-rt5651.o
+ obj-$(CONFIG_SND_SOC_INTEL_BYTCR_WM5102_MACH) += snd-soc-sst-bytcr-wm5102.o
+ obj-$(CONFIG_SND_SOC_INTEL_CHT_BSW_RT5672_MACH) += snd-soc-sst-cht-bsw-rt5672.o
++obj-$(CONFIG_SND_SOC_INTEL_CHT_YOGABOOK_MACH) += snd-soc-sst-cht-yogabook.o
+ obj-$(CONFIG_SND_SOC_INTEL_CHT_BSW_RT5645_MACH) += snd-soc-sst-cht-bsw-rt5645.o
+ obj-$(CONFIG_SND_SOC_INTEL_CHT_BSW_MAX98090_TI_MACH) += snd-soc-sst-cht-bsw-max98090_ti.o
+ obj-$(CONFIG_SND_SOC_INTEL_CHT_BSW_NAU8824_MACH) += snd-soc-sst-cht-bsw-nau8824.o

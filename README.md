@@ -14,7 +14,11 @@ The instructions and device notes primarily target the YB1-X91F/L Windows
 models. The Android YB1-X90F/L models should work as well, with model-specific
 exceptions tracked in the issue tracker. Most hardware is functional through
 the upstream Linux kernel and the Yoga Book patches. The default build uses
-the `v6.18.x-yogabook` kernel branch.
+the stable Linux `v7.2.8` release with a small, local Yoga Book driver stack.
+
+Linux `7.2.8` is a stable release, not an official kernel.org long-term-support
+(LTS) branch. The build is therefore labelled `7.2.8-yogabook`; it must be
+rebased onto the next official LTS when one is published.
 
 To boot Linux from USB, enable USB host mode and disable Secure Boot. The
 device-specific boot procedure is documented in the archived Lenovo Yoga Book
@@ -26,8 +30,9 @@ Known limitations include:
   v5 camera series (OV2740, OV8858, AtomISP/CSI-2 and WV517S), but runtime
   support remains experimental.
 - The LTE modem may not work on L variants.
-- Most Linux patches have been mainlined; the sound drivers still require the
-  Yoga Book-specific configuration and are not fully mainlined.
+- Generic RT5677, Goodix, IPU bridge, OV2740 and OV8858 drivers are upstream.
+  The build adds the Yoga Book-specific RT5677 ASoC machine driver, ACPI
+  software-node glue for audio/haptics, and WV517S lens actuator support.
 - Suspend, charging while powered on, screen brightness, stylus axes and
   microphone channel mapping may vary by device firmware and desktop environment.
 
@@ -162,13 +167,14 @@ Open **Actions → Build Yoga Book kernel → Run workflow** in your
 tag or branch on Ubuntu 24.04 and Ubuntu 26.04, then publishes the generated
 Debian packages and SHA-256 checksums as artifacts.
 
-The default source ref is `v6.18.x-yogabook`. A tag push matching
+The default source ref is `v7.2.8`. A tag push matching
 `kernel-*` also starts a build automatically.
 
-Kernel workflows apply the v5 Yoga Book camera series before building. It adds
-OV2740 front-camera, OV8858 rear-camera, AtomISP/CSI-2 bridge and WV517S focus
-support. The series was runtime-tested on YB1-X91L; the build artifact alone
-does not replace testing on the target tablet.
+Kernel workflows add the Yoga Book audio/haptics board glue and apply the v5
+camera series before building. This adds RT5677 machine support, OV2740
+front-camera, OV8858 rear-camera, AtomISP/CSI-2 bridge and WV517S focus
+support. The camera series was runtime-tested on YB1-X91L; the build artifact
+alone does not replace testing on the target tablet.
 
 The **Build latest Yoga Book userspace packages** workflow calls the local
 `scripts/build/build-userspace-deb.sh` helper and builds fresh Debian packages

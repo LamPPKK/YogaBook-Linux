@@ -6,14 +6,14 @@ on:
       kernel-ref:
         description: Kernel tag or branch
         required: true
-        default: v6.18.x-yogabook
+        default: v7.2.8
 
 permissions:
   contents: read
 
 env:
-  KERNEL_REPOSITORY: https://github.com/jekhor/yogabook-linux-kernel.git
-  KERNEL_REF: ${{ inputs.kernel-ref || 'v6.18.x-yogabook' }}
+  KERNEL_REPOSITORY: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+  KERNEL_REF: ${{ inputs.kernel-ref || 'v7.2.8' }}
 
 jobs:
   fedora-rpm:
@@ -29,7 +29,7 @@ jobs:
       - name: Build RPM packages
         run: |
           ./scripts/build/prepare-kernel.sh kernel "$KERNEL_REPOSITORY" "$KERNEL_REF"
-          ./scripts/build/build-kernel.sh rpm kernel artifacts -yogabook
+          ./scripts/build/build-kernel.sh rpm kernel artifacts -yogabook7.2
       - name: Upload Fedora RPM packages
         uses: actions/upload-artifact@v4
         with:
@@ -49,7 +49,7 @@ jobs:
       - name: Build kernel and modules archive
         run: |
           ./scripts/build/prepare-kernel.sh kernel "$KERNEL_REPOSITORY" "$KERNEL_REF"
-          ./scripts/build/build-kernel.sh arch kernel artifacts -yogabook
+          ./scripts/build/build-kernel.sh arch kernel artifacts -yogabook7.2
       - name: Upload Arch kernel artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -70,7 +70,7 @@ jobs:
       - name: Build generic ChromiumOS-compatible x86 kernel
         run: |
           ./scripts/build/prepare-kernel.sh kernel "$KERNEL_REPOSITORY" "$KERNEL_REF"
-          ./scripts/build/build-kernel.sh chromiumos kernel artifacts -yogabook
+          ./scripts/build/build-kernel.sh chromiumos kernel artifacts -yogabook7.2
       - name: Upload ChromiumOS kernel artifacts
         uses: actions/upload-artifact@v4
         with:
