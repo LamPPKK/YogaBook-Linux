@@ -37,5 +37,5 @@ debs=("$work_dir"/*.deb)
 ((${#debs[@]})) || die "package build did not produce a Debian package"
 cp "${debs[@]}" "$output_dir/"
 cp "$source_dir/SOURCE_COMMIT" "$output_dir/"
-mapfile -t metadata=("$output_dir"/*.deb "$output_dir/SOURCE_COMMIT")
+metadata=("$output_dir"/*.deb "$output_dir/SOURCE_COMMIT")
 sha256sum "${metadata[@]}" >"$output_dir/SHA256SUMS"
