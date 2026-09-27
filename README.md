@@ -61,15 +61,19 @@ repositories, then install these packages:
 - `yogabook-support`
 - `alsa-ucm-conf-yogabook`
 
-Available package targets currently include Ubuntu 24.04/26.04, Debian
-Bookworm/Trixie/Forky/Sid, Fedora/RHEL-compatible systems, Arch/Manjaro and
-Alpine Linux. Ubuntu, Fedora and Arch packages are built by GitHub Actions in
-this repository and published as checksummed artifacts.
+The priority compatibility targets are Linux Mint 22.3/Zena, Ubuntu 24.04
+Noble, Ubuntu 26.04 Resolute and Debian 13.7 Trixie. Mint 22.3 uses the
+Ubuntu 24.04 artifact; LMDE 7/Gigi uses the Debian Trixie path. Debian 12
+Bookworm remains supported as oldstable. Fedora/RHEL-compatible systems,
+Arch/Manjaro and Alpine Linux remain available as additional targets.
+Ubuntu, Fedora and Arch packages are built by GitHub Actions in this
+repository and published as checksummed artifacts.
 
 Package repositories and build scripts are maintained here:
 
 - Build helpers: <https://github.com/LamPPKK/YogaBook-Linux/tree/master/scripts/build>
 - Ubuntu installer: <https://github.com/LamPPKK/YogaBook-Linux/blob/master/scripts/install/install-ubuntu.sh>
+- Linux Mint installer: <https://github.com/LamPPKK/YogaBook-Linux/blob/master/scripts/install/install-mint.sh>
 - Debian installer: <https://github.com/LamPPKK/YogaBook-Linux/blob/master/scripts/install/install-debian.sh>
 - Fedora/RHEL installer: <https://github.com/LamPPKK/YogaBook-Linux/blob/master/scripts/install/install-fedora.sh>
 - Arch/Manjaro installer: <https://github.com/LamPPKK/YogaBook-Linux/blob/master/scripts/install/install-arch.sh>
@@ -112,7 +116,14 @@ sudo apt install curl jq unzip
 ./scripts/install/install-ubuntu.sh
 ```
 
-Debian Bookworm/Trixie/Forky/Sid:
+Linux Mint 22.3/Zena or LMDE 7/Gigi:
+
+```sh
+sudo apt install curl jq unzip
+./scripts/install/install-mint.sh
+```
+
+Debian 13/Trixie or Debian 12/Bookworm:
 
 ```sh
 sudo apt install curl jq unzip
@@ -176,7 +187,9 @@ front-camera, OV8858 rear-camera, AtomISP/CSI-2 bridge and WV517S focus
 support. The camera series was runtime-tested on YB1-X91L; the build artifact
 alone does not replace testing on the target tablet.
 
-The **Build latest Yoga Book userspace packages** workflow calls the local
+The **Build latest Yoga Book userspace packages** workflow builds on Ubuntu
+24.04 to provide an older glibc baseline compatible with Mint 22.3, Debian 13
+and Ubuntu 26.04. It calls the local
 `scripts/build/build-userspace-deb.sh` helper and builds fresh Debian packages
 from the LamPPKK source mirrors for the touch keyboard, ALSA UCM configuration
 and Yoga Book support service. Each artifact includes the exact source commit

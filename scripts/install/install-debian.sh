@@ -4,12 +4,14 @@ set -Eeuo pipefail
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 repo_root=$(cd -- "$script_dir/../.." && pwd)
 source "$script_dir/lib/github-actions.sh"
+source "$script_dir/lib/distro.sh"
 
 source /etc/os-release
-case "${VERSION_CODENAME:-}" in
-  bookworm|trixie|forky|sid) ;;
-  *) printf 'error: this installer supports Debian Bookworm, Trixie, Forky and Sid\n' >&2; exit 1 ;;
-esac
+yogabook_debian_supported || {
+  printf 'error: this installer supports Debian Bookworm/Trixie and LMDE 7 (Trixie); detected %s %s\n' \
+    "${ID:-unknown}" "${VERSION_CODENAME:-unknown}" >&2
+  exit 1
+}
 
 package_dir=""
 keyboard_args=()

@@ -1,0 +1,53 @@
+name: Check distro compatibility
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - scripts/install/**
+      - tests/install/**
+      - .github/workflows/check-distro-compatibility.yml
+
+permissions:
+  contents: read
+
+jobs:
+  installer-detection:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-26.04]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run installer compatibility tests
+        run: |
+          bash -n scripts/install/*.sh scripts/install/lib/*.sh
+          bash -n tests/install/test-distro-detection.sh
+          bash tests/install/test-distro-detection.sh
+
+  debian-13-package-metadata:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check latest Debian artifact metadata in Debian 13
+        run: |
+          sudo docker run --rm \
+            -e YOGABOOK_REPOSITORY=LamPPKK/YogaBook-Linux \
+            -v "$PWD:/workspace:ro" \
+            -w /workspace \
+            debian:13 \
+            bash -euxo pipefail -c '
+              apt-get update
+              apt-get install -y --no-install-recommends ca-certificates curl dpkg-dev jq unzip
+              kernel_run=$(curl -fsSL "https://api.github.com/repos/$YOGABOOK_REPOSITORY/actions/workflows/build-kernel.yml/runs?branch=master&status=success&per_page=1" | jq -er ".workflow_runs[0].id")
+              userspace_run=$(curl -fsSL "https://api.github.com/repos/$YOGABOOK_REPOSITORY/actions/workflows/build-userspace-debs.yml/runs?branch=master&status=success&per_page=1" | jq -er ".workflow_runs[0].id")
+              mkdir -p /tmp/packages
+              kernel_artifact=$(curl -fsSL "https://api.github.com/repos/$YOGABOOK_REPOSITORY/actions/runs/$kernel_run/artifacts?per_page=100" | jq -er ".artifacts[] | select(.name | test(\"^yogabook-kernel-ubuntu-24\\\\.04-\")) | .id" | head -n 1)
+              curl -fsSL -L "https://api.github.com/repos/$YOGABOOK_REPOSITORY/actions/artifacts/$kernel_artifact/zip" -o /tmp/kernel.zip
+              unzip -q /tmp/kernel.zip -d /tmp/packages
+              find /tmp/packages -name "*.deb" -print0 | xargs -0 -r -n1 dpkg-deb --info >/dev/null
+              test -n "$userspace_run"
+              echo "Debian 13 package metadata check passed"
+            '

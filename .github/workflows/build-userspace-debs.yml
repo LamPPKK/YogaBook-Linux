@@ -10,7 +10,9 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-26.04
+    # Build against Noble's older glibc so packages run on Mint 22.x,
+    # Debian 13 and the newer Ubuntu 26.04 LTS.
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:

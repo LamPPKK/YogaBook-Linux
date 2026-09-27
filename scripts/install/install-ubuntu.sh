@@ -4,11 +4,12 @@ set -Eeuo pipefail
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 repo_root=$(cd -- "$script_dir/../.." && pwd)
 source "$script_dir/lib/github-actions.sh"
+source "$script_dir/lib/distro.sh"
 
 source /etc/os-release
-version_id=${VERSION_ID:-}
-[[ "$version_id" == 24.04 || "$version_id" == 26.04 ]] || {
-  printf 'error: this installer supports Ubuntu 24.04 and 26.04; detected %s\n' "$version_id" >&2
+artifact_version=$(yogabook_ubuntu_artifact_version) || {
+  printf 'error: supported systems are Ubuntu 24.04/26.04 and Linux Mint 22.x (Ubuntu Noble); detected %s %s\n' \
+    "${ID:-unknown}" "${VERSION_ID:-unknown}" >&2
   exit 1
 }
 
@@ -28,7 +29,7 @@ temporary_dir=""
 if [[ -z "$package_dir" ]]; then
   temporary_dir=$(mktemp -d)
   trap 'rm -rf "$temporary_dir"' EXIT
-  download_latest_ubuntu "$version_id" "$temporary_dir"
+  download_latest_ubuntu "$artifact_version" "$temporary_dir"
   package_dir=$temporary_dir
 fi
 
