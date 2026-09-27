@@ -10,18 +10,29 @@ configuration, sensor support and distribution packaging information.
 
 ## Current status
 
-The default kernel is based on the `v6.18.x-yogabook` branch. Most hardware
-support is available through the Yoga Book kernel patches and the upstream
-Linux kernel.
+The instructions and device notes primarily target the YB1-X91F/L Windows
+models. The Android YB1-X90F/L models should work as well, with model-specific
+exceptions tracked in the issue tracker. Most hardware is functional through
+the upstream Linux kernel and the Yoga Book patches. The default build uses
+the `v6.18.x-yogabook` kernel branch.
+
+To boot Linux from USB, enable USB host mode and disable Secure Boot. The
+device-specific boot procedure is documented in the archived Lenovo Yoga Book
+guide: <https://web.archive.org/web/20220516142318/https://poz1.com/windows-on-android-lenovo-yogabook/>.
 
 Known limitations include:
 
-- Camera support is experimental and is built from the Yoga Book v5 camera
-  series (OV2740, OV8858, AtomISP/CSI-2 and WV517S).
-- LTE may not work on L variants.
-- Audio still requires the Yoga Book-specific configuration.
+- Cameras are not fully functional yet. The CI build includes the Yoga Book
+  v5 camera series (OV2740, OV8858, AtomISP/CSI-2 and WV517S), but runtime
+  support remains experimental.
+- The LTE modem may not work on L variants.
+- Most Linux patches have been mainlined; the sound drivers still require the
+  Yoga Book-specific configuration and are not fully mainlined.
 - Suspend, charging while powered on, screen brightness, stylus axes and
   microphone channel mapping may vary by device firmware and desktop environment.
+
+For upstream project context, see the original Yoga Book Linux repository:
+<https://github.com/jekhor/yogabook-linux>.
 
 Please include the device model and `dmesg`/`journalctl` output when reporting
 an issue: <https://github.com/LamPPKK/YogaBook-Linux/issues>.
