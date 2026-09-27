@@ -29,11 +29,10 @@ an issue: <https://github.com/LamPPKK/YogaBook-Linux/issues>.
 ## Maintained source mirrors
 
 The related source repositories are mirrored under the `LamPPKK` account so
-the superproject does not depend on a GitLab-only gitlink or an upstream
-repository that can disappear. The mirror set includes the touch keyboard,
-ALSA UCM, support service, IIO sensor proxy, live CD, Android kernel sources
-and ProductionKernelQuilts. Each mirror preserves the upstream default branch
-and tags where Git hosting permits it.
+the superproject and its build jobs use your GitHub organization. The mirror
+set includes the touch keyboard, ALSA UCM, support service, IIO sensor proxy,
+live CD, Android kernel sources and ProductionKernelQuilts. `ps4-linux` is a
+separate repository and is intentionally not a submodule or build input here.
 
 ## Installation
 
@@ -46,17 +45,22 @@ repositories, then install these packages:
 - `yogabook-support`
 - `alsa-ucm-conf-yogabook`
 
-Available package targets currently include Ubuntu 24.04, Ubuntu 25.10,
-Ubuntu 26.04, Debian Trixie/Forky/Testing/Sid, Arch Linux and Alpine Linux.
+Available package targets currently include Ubuntu 24.04/26.04, Debian
+Bookworm/Trixie/Forky/Sid, Fedora/RHEL-compatible systems, Arch/Manjaro and
+Alpine Linux. Ubuntu, Fedora and Arch packages are built by GitHub Actions in
+this repository and published as checksummed artifacts.
 
-Package repositories and build scripts:
+Package repositories and build scripts are maintained here:
 
-- Debian/Ubuntu: <https://gitlab.imanuel.dev/packages/yogabook/building/apt-build>
-- Arch Linux: <https://gitlab.imanuel.dev/packages/yogabook/building/pacman-build>
-- Alpine Linux: <https://gitlab.imanuel.dev/packages/yogabook/building/apk-build>
-- Package index: <https://packages.ulbricht.casa/linux-yogabook/-/packages>
+- Build helpers: <https://github.com/LamPPKK/YogaBook-Linux/tree/master/scripts/build>
+- Ubuntu installer: <https://github.com/LamPPKK/YogaBook-Linux/blob/master/scripts/install/install-ubuntu.sh>
+- Debian installer: <https://github.com/LamPPKK/YogaBook-Linux/blob/master/scripts/install/install-debian.sh>
+- Fedora/RHEL installer: <https://github.com/LamPPKK/YogaBook-Linux/blob/master/scripts/install/install-fedora.sh>
+- Arch/Manjaro installer: <https://github.com/LamPPKK/YogaBook-Linux/blob/master/scripts/install/install-arch.sh>
+- Alpine installer: <https://github.com/LamPPKK/YogaBook-Linux/blob/master/scripts/install/install-alpine.sh>
+- GitHub Actions packages: <https://github.com/LamPPKK/YogaBook-Linux/actions>
 
-For Debian or Ubuntu, install downloaded packages with:
+For Debian or Ubuntu, install packages downloaded from this repository with:
 
 ```sh
 sudo apt install ./linux-image-yogabook*.deb ./touch-keyboard*.deb \
@@ -77,7 +81,52 @@ uname -r
 
 The output should contain `yogabook`.
 
-## Installer script
+## Per-distribution installers
+
+Clone this repository once, then run the installer for the target operating
+system. The Ubuntu, Debian, Fedora and Arch scripts download the latest
+successful package artifact from `LamPPKK/YogaBook-Linux` automatically. The
+download path uses GitHub's public Actions API and requires `curl`, `jq` and
+`unzip`.
+
+Ubuntu 24.04/26.04:
+
+```sh
+sudo apt install curl jq unzip
+./scripts/install/install-ubuntu.sh
+```
+
+Debian Bookworm/Trixie/Forky/Sid:
+
+```sh
+sudo apt install curl jq unzip
+./scripts/install/install-debian.sh
+```
+
+Fedora/RHEL-compatible distributions:
+
+```sh
+sudo dnf install curl jq unzip
+./scripts/install/install-fedora.sh
+```
+
+Arch/Manjaro:
+
+```sh
+sudo pacman -S --needed curl jq unzip
+./scripts/install/install-arch.sh
+```
+
+Alpine uses locally built `.apk` files because this repository does not yet
+publish a stable Alpine kernel artifact:
+
+```sh
+doas apk add curl
+doas ./scripts/install/install-alpine.sh --package-dir ./packages
+```
+
+All installers accept `--package-dir DIR` for offline installation. The
+generic local installer remains available for mixed package directories:
 
 The repository includes `install-yogabook.sh` for a local package directory:
 
@@ -85,7 +134,7 @@ The repository includes `install-yogabook.sh` for a local package directory:
 sudo ./install-yogabook.sh --package-dir ./packages
 ```
 
-The script detects and installs `.deb`, `.rpm`, `.pkg.tar.*` and `.apk`
+The generic script detects and installs `.deb`, `.rpm`, `.pkg.tar.*` and `.apk`
 artifacts using the available package manager. It defaults to the ANSI `pc104`
 touch-keyboard layout. For an ISO keyboard use:
 
@@ -97,10 +146,10 @@ Use `--no-keyboard-layout` to preserve the current layout.
 
 ## Building the kernel with GitHub Actions
 
-Open **Actions → Build Yoga Book kernel → Run workflow** in your fork. The
-workflow builds the selected kernel tag or branch on Ubuntu 24.04 and Ubuntu
-26.04, then publishes the generated Debian packages and SHA-256 checksums as
-artifacts.
+Open **Actions → Build Yoga Book kernel → Run workflow** in your
+`LamPPKK/YogaBook-Linux` repository. The workflow builds the selected kernel
+tag or branch on Ubuntu 24.04 and Ubuntu 26.04, then publishes the generated
+Debian packages and SHA-256 checksums as artifacts.
 
 The default source ref is `v6.18.x-yogabook`. A tag push matching
 `kernel-*` also starts a build automatically.
@@ -110,12 +159,14 @@ OV2740 front-camera, OV8858 rear-camera, AtomISP/CSI-2 bridge and WV517S focus
 support. The series was runtime-tested on YB1-X91L; the build artifact alone
 does not replace testing on the target tablet.
 
-The **Build latest Yoga Book userspace packages** workflow builds fresh Debian
-packages from the current upstream branches for the touch keyboard, ALSA UCM
-configuration and Yoga Book support service. Each artifact includes the exact
-source commit and SHA-256 checksums.
+The **Build latest Yoga Book userspace packages** workflow calls the local
+`scripts/build/build-userspace-deb.sh` helper and builds fresh Debian packages
+from the LamPPKK source mirrors for the touch keyboard, ALSA UCM configuration
+and Yoga Book support service. Each artifact includes the exact source commit
+and SHA-256 checksums.
 
-The **Build native Yoga Book packages** workflow additionally provides:
+The **Build native Yoga Book packages** workflow calls the local kernel build
+helpers and additionally provides:
 
 - Fedora RPM packages using `binrpm-pkg`
 - Arch Linux kernel and modules artifacts
