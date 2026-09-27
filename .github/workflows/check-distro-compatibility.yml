@@ -35,17 +35,19 @@ jobs:
         run: |
           sudo docker run --rm \
             -e YOGABOOK_REPOSITORY=LamPPKK/YogaBook-Linux \
+            -e GH_TOKEN="${{ github.token }}" \
             -v "$PWD:/workspace:ro" \
             -w /workspace \
             debian:13 \
             bash -euxo pipefail -c '
               apt-get update
               apt-get install -y --no-install-recommends ca-certificates curl dpkg-dev jq unzip
-              kernel_run=$(curl -fsSL "https://api.github.com/repos/$YOGABOOK_REPOSITORY/actions/workflows/build-kernel.yml/runs?branch=master&status=success&per_page=1" | jq -er ".workflow_runs[0].id")
-              userspace_run=$(curl -fsSL "https://api.github.com/repos/$YOGABOOK_REPOSITORY/actions/workflows/build-userspace-debs.yml/runs?branch=master&status=success&per_page=1" | jq -er ".workflow_runs[0].id")
+              api_auth=(-H "Authorization: Bearer $GH_TOKEN")
+              kernel_run=$(curl "${api_auth[@]}" -fsSL "https://api.github.com/repos/$YOGABOOK_REPOSITORY/actions/workflows/build-kernel.yml/runs?branch=master&status=success&per_page=1" | jq -er ".workflow_runs[0].id")
+              userspace_run=$(curl "${api_auth[@]}" -fsSL "https://api.github.com/repos/$YOGABOOK_REPOSITORY/actions/workflows/build-userspace-debs.yml/runs?branch=master&status=success&per_page=1" | jq -er ".workflow_runs[0].id")
               mkdir -p /tmp/packages
-              kernel_artifact=$(curl -fsSL "https://api.github.com/repos/$YOGABOOK_REPOSITORY/actions/runs/$kernel_run/artifacts?per_page=100" | jq -er ".artifacts[] | select(.name | test(\"^yogabook-kernel-ubuntu-24\\\\.04-\")) | .id" | head -n 1)
-              curl -fsSL -L "https://api.github.com/repos/$YOGABOOK_REPOSITORY/actions/artifacts/$kernel_artifact/zip" -o /tmp/kernel.zip
+              kernel_artifact=$(curl "${api_auth[@]}" -fsSL "https://api.github.com/repos/$YOGABOOK_REPOSITORY/actions/runs/$kernel_run/artifacts?per_page=100" | jq -er ".artifacts[] | select(.name | test(\"^yogabook-kernel-ubuntu-24\\\\.04-\")) | .id" | head -n 1)
+              curl "${api_auth[@]}" -fsSL -L "https://api.github.com/repos/$YOGABOOK_REPOSITORY/actions/artifacts/$kernel_artifact/zip" -o /tmp/kernel.zip
               unzip -q /tmp/kernel.zip -d /tmp/packages
               find /tmp/packages -name "*.deb" -print0 | xargs -0 -r -n1 dpkg-deb --info >/dev/null
               test -n "$userspace_run"
